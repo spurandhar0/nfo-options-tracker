@@ -1,0 +1,49 @@
+name: 📊 NSE Stock Options Daily Update
+
+on:
+  schedule:
+    - cron: "0 13 * * 1-5"      # Mon–Fri 13:00 UTC = 06:30 PM IST
+
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for manual run (optional)"
+        required: false
+        default: "Manual trigger"
+
+jobs:
+  update-options-data:
+    name: Fetch Stock Options & Update Excel
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: 📦 Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: 🚀 Fetch NSE stock options & update Excel
+        run: python scripts/fetch_options_data.py
+
+      - name: 📤 Commit & push updated data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/stock_options.xlsx data/stock_options.json
+          git diff --cached --quiet || \
+            git commit -m "📊 Auto-update: Stock Options $(date +'%d %b %Y %H:%M IST')"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
