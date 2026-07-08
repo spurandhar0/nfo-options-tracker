@@ -1,9 +1,10 @@
 {
-  "updated_at": "2026-07-07T15:45:18.461214",
+  "updated_at": "2026-07-08T15:24:49.188964",
   "cm": "2026-07-30",
   "nm": "2026-08-27",
-  "total": 160,
+  "total": 159,
   "failed": [
+    "AARTIIND",
     "LTIM",
     "PEL",
     "TATAMOTORS",
